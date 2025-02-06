@@ -446,8 +446,8 @@ async function run() {
                 }
             }
 
-            logger.warn('Cycle Complete', 'Waiting 1 hour before next run...');
-            await delay(60 * 60);
+            logger.warn('Cycle Complete', 'Waiting 1 minutes before next run...');
+            await delay(1 * 1);
         }
     } catch (error) {
         logger.error('Fatal error occurred', '', error);
