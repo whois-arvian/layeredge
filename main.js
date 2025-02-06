@@ -8,8 +8,8 @@ import banner from './utils/banner.js';
 
 
 const logger = {
-    verbose: true, 
-    
+    verbose: true,
+
     _formatTimestamp() {
         return chalk.gray(`[${new Date().toLocaleTimeString()}]`);
     },
@@ -28,7 +28,7 @@ const logger = {
 
     _formatError(error) {
         if (!error) return '';
-        
+
         let errorDetails = '';
         if (axios.isAxiosError(error)) {
             errorDetails = `
@@ -49,11 +49,11 @@ const logger = {
         const header = chalk.cyan('◆ LayerEdge Auto Bot');
 
         let formattedMessage = `${header} ${timestamp} ${levelTag} ${message}`;
-        
+
         if (value) {
-            const valueStyle = level === 'error' ? chalk.red : 
-                             level === 'warn' ? chalk.yellow : 
-                             chalk.green;
+            const valueStyle = level === 'error' ? chalk.red :
+                level === 'warn' ? chalk.yellow :
+                    chalk.green;
             formattedMessage += ` ${valueStyle(value)}`;
         }
 
@@ -72,12 +72,12 @@ const logger = {
     verbose: (message, value = '') => logger.verbose && logger.log('verbose', message, value),
 
     progress(wallet, step, status) {
-        const progressStyle = status === 'success' 
-            ? chalk.green('✔') 
-            : status === 'failed' 
-            ? chalk.red('✘') 
-            : chalk.yellow('➤');
-        
+        const progressStyle = status === 'success'
+            ? chalk.green('✔')
+            : status === 'failed'
+                ? chalk.red('✘')
+                : chalk.yellow('➤');
+
         console.log(
             chalk.cyan('◆ LayerEdge Auto Bot'),
             chalk.gray(`[${new Date().toLocaleTimeString()}]`),
@@ -99,16 +99,16 @@ class RequestHandler {
             } catch (error) {
                 const isLastRetry = i === retries - 1;
                 const status = error.response?.status;
-                
+
                 // Special handling for 500 errors
                 if (status === 500) {
                     logger.error(`Server Error (500)`, `Attempt ${i + 1}/${retries}`, error);
                     if (isLastRetry) break;
-                    
+
                     // Exponential backoff for 500 errors
                     const waitTime = backoffMs * Math.pow(1.5, i);
-                    logger.warn(`Waiting ${waitTime/1000}s before retry...`);
-                    await delay(waitTime/1000);
+                    logger.warn(`Waiting ${waitTime / 1000}s before retry...`);
+                    await delay(waitTime / 1000);
                     continue;
                 }
 
@@ -200,8 +200,8 @@ class LayerEdgeConnection {
         this.wallet = privateKey
             ? new Wallet(privateKey)
             : Wallet.createRandom();
-            
-        logger.verbose(`Initialized LayerEdgeConnection`, 
+
+        logger.verbose(`Initialized LayerEdgeConnection`,
             `Wallet: ${this.wallet.address}\nProxy: ${this.proxy || 'None'}`);
     }
 
@@ -216,7 +216,7 @@ class LayerEdgeConnection {
                 ...(config.headers || {})
             }
         };
-        
+
         return await RequestHandler.makeRequest(finalConfig, this.retryCount);
     }
 
@@ -378,12 +378,12 @@ class LayerEdgeConnection {
 // Main Application
 async function readWallets() {
     try {
-        await fs.access("wallets1.json");
-        const data = await fs.readFile("wallets1.json", "utf-8");
+        await fs.access("wallets.json");
+        const data = await fs.readFile("wallets.json", "utf-8");
         return JSON.parse(data);
     } catch (err) {
         if (err.code === 'ENOENT') {
-            logger.info("No wallets found in wallets1.json");
+            logger.info("No wallets found in wallets.json");
             return [];
         }
         throw err;
@@ -393,15 +393,15 @@ async function readWallets() {
 async function run() {
     console.log(banner);
     logger.info('Starting Layer Edge Auto Bot', 'Initializing...');
-    
+
     try {
         const proxies = await readFile('proxy.txt');
         let wallets = await readWallets();
-        
+
         if (proxies.length === 0) {
             logger.warn('No Proxies', 'Running without proxy support');
         }
-        
+
         if (wallets.length === 0) {
             throw new Error('No wallets configured');
         }
@@ -413,11 +413,11 @@ async function run() {
                 const wallet = wallets[i];
                 const proxy = proxies[i % proxies.length] || null;
                 const { address, privateKey } = wallet;
-                
+
                 try {
                     logger.verbose(`Processing wallet ${i + 1}/${wallets.length}`, address);
                     const socket = new LayerEdgeConnection(proxy, privateKey);
-                    
+
                     logger.progress(address, 'Wallet Processing Started', 'start');
                     logger.info(`Wallet Details`, `Address: ${address}, Proxy: ${proxy || 'No Proxy'}`);
 
@@ -445,7 +445,7 @@ async function run() {
                     await delay(5); // Wait 5 seconds before moving to next wallet
                 }
             }
-            
+
             logger.warn('Cycle Complete', 'Waiting 1 hour before next run...');
             await delay(60 * 60);
         }
