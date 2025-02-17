@@ -34,7 +34,7 @@ const logger = {
 
         let formattedValue = '';
         if (value) {
-            switch(level) {
+            switch (level) {
                 case 'error':
                     formattedValue = chalk.red(` ✘ ${value}`);
                     break;
@@ -59,12 +59,12 @@ const logger = {
     debug: (message, value = '') => logger.log('debug', message, value),
 
     progress(step, status) {
-        const progressStyle = status === 'success' 
-            ? chalk.green('✔') 
-            : status === 'failed' 
-            ? chalk.red('✘') 
-            : chalk.yellow('➤');
-        
+        const progressStyle = status === 'success'
+            ? chalk.green('✔')
+            : status === 'failed'
+                ? chalk.red('✘')
+                : chalk.yellow('➤');
+
         console.log(
             chalk.cyan('◆ LayerEdge Auto Bot'),
             chalk.gray(`[${new Date().toLocaleTimeString()}]`),
@@ -230,7 +230,7 @@ class LayerEdgeConnection {
 async function autoRegister() {
     console.log(banner);
     logger.info('Starting LayerEdge Auto Registration Bot', 'Initializing...');
-    
+
     const proxies = await readFile('proxy.txt');
     if (proxies.length === 0) {
         logger.warn('No proxies found', 'Running without proxy support');
@@ -242,7 +242,7 @@ async function autoRegister() {
         return;
     }
 
-    const refCode = await askQuestion("Enter your referral code (example: knYyWnsE): ");
+    const refCode = await askQuestion("Enter your referral code (example: gGY9EyWe): ");
     if (!refCode) {
         logger.error('Referral code is required');
         return;
@@ -254,12 +254,12 @@ async function autoRegister() {
         const proxy = proxies[i % proxies.length] || null;
         try {
             logger.progress(`Creating wallet ${i + 1}/${numberOfWallets}`, 'processing');
-            
+
             const walletDetails = createNewWallet();
             logger.info(`New wallet created`, walletDetails.address);
 
             const connection = new LayerEdgeConnection(proxy, walletDetails.privateKey, refCode);
-            
+
             logger.progress(`Verifying invite code`, 'processing');
             const isValid = await connection.checkInvite();
             if (!isValid) continue;
