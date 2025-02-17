@@ -5,7 +5,8 @@
   "description": "auto connect node layeredge",
   "main": "main.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node main.js",
+    "run-ref": "node ref.js"
   },
   "author": "@airdropinsidersid",
   "license": "MIT",
