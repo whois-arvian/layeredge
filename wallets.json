@@ -2,5 +2,9 @@
     {
         "address": "0x2Ae8985D9c26F0117994A0f1451FeBAc6B8F7C51",
         "privateKey": "301922e6499c0d2aceb079aed622caae82f6eafadee5d084aec9060cf4041b00"
+    },
+    {
+        "address": "0xD6b10b7B50be88d053cb0b9Dad58B5Ab6B9F636C",
+        "privateKey": "78c263df3cd0f11c89668fdd17cd70b9d001bfb9e4cd42801427fc76df96930f"
     }
 ]
